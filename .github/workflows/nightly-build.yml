@@ -80,7 +80,8 @@ jobs:
           docker tag minio-candidate:verify "$IMAGE:stable"
           docker push "$IMAGE:$release"
           docker push "$IMAGE:stable"
-          digest="$(docker buildx imagetools inspect "$IMAGE:$release" --format '{{.Digest}}')"
+          digest="$(docker buildx imagetools inspect "$IMAGE:$release" | awk '/^Digest:/ {print $2; exit}')"
+          test -n "$digest"
           printf 'digest=%s\n' "$digest" >> "$GITHUB_OUTPUT"
       - name: Publish provenance summary
         run: |
