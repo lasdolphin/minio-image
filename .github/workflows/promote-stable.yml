@@ -1,0 +1,34 @@
+name: Promote verified MinIO image
+on:
+  workflow_dispatch:
+    inputs:
+      digest:
+        description: Verified image digest
+        required: true
+        type: string
+permissions:
+  contents: read
+  packages: write
+concurrency:
+  group: minio-image-publish
+  cancel-in-progress: false
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Promote verified digest
+        env:
+          DIGEST: ${{ inputs.digest }}
+          IMAGE: ghcr.io/lasdolphin/minio-image
+        run: |
+          [[ "$DIGEST" =~ ^sha256:[0-9a-f]{64}$ ]]
+          docker buildx imagetools inspect "$IMAGE@$DIGEST"
+          docker buildx imagetools create --prefer-index=false --tag "$IMAGE:stable" "$IMAGE@$DIGEST"
+          actual="$(docker buildx imagetools inspect "$IMAGE:stable" | awk '/^Digest:/ {print $2; exit}')"
+          test "$actual" = "$DIGEST"
+          echo "Promoted stable to $actual" >> "$GITHUB_STEP_SUMMARY"
