@@ -18,13 +18,19 @@ docker run -d --rm --name "$name" -p 9000 \
   -e MINIO_ROOT_PASSWORD=minioadmin \
   "$image" >/dev/null
 
+# Docker may return both IPv4 and IPv6 bindings. Select one port before
+# constructing the health-check URL, otherwise the embedded newline produces
+# an invalid URL for curl.
+host_port="$(docker port "$name" 9000/tcp | sed -n '1{s/.*://;p;}')"
+test -n "$host_port"
+
 for _ in $(seq 1 30); do
-  if curl --fail --silent --show-error "http://127.0.0.1:$(docker port "$name" 9000/tcp | sed 's/.*://')/minio/health/live" >/dev/null; then
+  if curl --fail --silent --show-error "http://127.0.0.1:${host_port}/minio/health/live" >/dev/null; then
     break
   fi
   sleep 1
 done
 
-curl --fail --silent --show-error "http://127.0.0.1:$(docker port "$name" 9000/tcp | sed 's/.*://')/minio/health/live" >/dev/null
+curl --fail --silent --show-error "http://127.0.0.1:${host_port}/minio/health/live" >/dev/null
 docker cp "$probe" "$name:/tmp/tls-probe"
 docker exec "$name" /tmp/tls-probe
