@@ -12,9 +12,9 @@
 
 **Purpose**: Establish the repository layout and public licensing baseline.
 
-- [ ] T001 Create CI, script, TLS-probe, and license directories in `.github/workflows/`, `scripts/`, `tests/tls-probe/`, and `LICENSES/`
-- [ ] T002 [P] Add AGPLv3 license and MinIO upstream attribution in `LICENSES/AGPL-3.0.txt` and `LICENSES/UPSTREAM.md`
-- [ ] T003 [P] Expand project purpose, public package location, and production boundary in `README.md`
+- [X] T001 Create CI, script, TLS-probe, and license directories in `.github/workflows/`, `scripts/`, `tests/tls-probe/`, and `LICENSES/`
+- [X] T002 [P] Add AGPLv3 license and MinIO upstream attribution in `LICENSES/AGPL-3.0.txt` and `LICENSES/UPSTREAM.md`
+- [X] T003 [P] Expand project purpose, public package location, and production boundary in `README.md`
 
 ---
 
@@ -24,11 +24,11 @@
 
 **⚠️ CRITICAL**: Complete this phase before user-story workflow wiring.
 
-- [ ] T004 Create a reproducible source-build Dockerfile accepting exact release tag and source revision in `Dockerfile`
-- [ ] T005 [P] Implement a stable-release discovery helper that returns only published, non-draft, non-prerelease releases in `scripts/discover-release.sh`
-- [ ] T006 [P] Implement a GHCR release-tag existence helper in `scripts/release-exists.sh`
-- [ ] T007 [P] Implement a runtime startup and four-endpoint certificate-validation probe in `tests/tls-probe/main.go`
-- [ ] T008 Build candidate verification orchestration around the runtime probe in `scripts/verify-candidate.sh`
+- [X] T004 Create a reproducible source-build Dockerfile accepting exact release tag and source revision in `Dockerfile`
+- [X] T005 [P] Implement a stable-release discovery helper that returns only published, non-draft, non-prerelease releases in `scripts/discover-release.sh`
+- [X] T006 [P] Implement a GHCR release-tag existence helper in `scripts/release-exists.sh`
+- [X] T007 [P] Implement a runtime startup and four-endpoint certificate-validation probe in `tests/tls-probe/main.go`
+- [X] T008 Build candidate verification orchestration around the runtime probe in `scripts/verify-candidate.sh`
 
 **Checkpoint**: Source discovery, candidate image building, and behavioral verification are available to the workflow.
 
@@ -40,12 +40,12 @@
 
 **Independent Test**: A manual workflow run with an existing release tag returns `no-update` with no build/push; a run for an absent stable release builds it, starts it, and records four certificate-validation rejections.
 
-- [ ] T009 [P] [US1] Add shell tests for stable/non-prerelease selection and malformed release data in `tests/discover-release.test.sh`
-- [ ] T010 [P] [US1] Add TLS-probe tests for four rejected chains and any successful connection failure in `tests/tls-probe/main_test.go`
-- [ ] T011 [US1] Implement nightly and manual triggers plus least-privilege read permissions in `.github/workflows/nightly-build.yml`
-- [ ] T012 [US1] Wire release discovery and exact release-tag no-update exit into `.github/workflows/nightly-build.yml`
-- [ ] T013 [US1] Wire exact source checkout, candidate build, startup smoke check, and `scripts/verify-candidate.sh` into `.github/workflows/nightly-build.yml`
-- [ ] T014 [US1] Publish only a verified absent release-version tag and emit source revision plus OCI digest in `.github/workflows/nightly-build.yml`
+- [X] T009 [P] [US1] Add shell tests for stable/non-prerelease selection and malformed release data in `tests/discover-release.test.sh`
+- [X] T010 [P] [US1] Add TLS-probe tests for four rejected chains and any successful connection failure in `tests/tls-probe/main_test.go`
+- [X] T011 [US1] Implement nightly and manual triggers plus least-privilege read permissions in `.github/workflows/nightly-build.yml`
+- [X] T012 [US1] Wire release discovery and exact release-tag no-update exit into `.github/workflows/nightly-build.yml`
+- [X] T013 [US1] Wire exact source checkout, candidate build, startup smoke check, and `scripts/verify-candidate.sh` into `.github/workflows/nightly-build.yml`
+- [X] T014 [US1] Publish only a verified absent release-version tag and emit source revision plus OCI digest in `.github/workflows/nightly-build.yml`
 
 **Checkpoint**: The MVP creates a verified public image only for a newly available stable upstream release.
 
@@ -57,9 +57,9 @@
 
 **Independent Test**: A passing release run updates `stable`; a forced verification failure leaves the prior `stable` reference unchanged.
 
-- [ ] T015 [P] [US2] Add stable-promotion and no-mutation-on-failure workflow assertions in `tests/workflow/promotion-contract.md`
-- [ ] T016 [US2] Add post-verification `stable` promotion and digest comparison in `.github/workflows/nightly-build.yml`
-- [ ] T017 [US2] Add failure-path guards that prevent release and `stable` publication after any failed verification in `.github/workflows/nightly-build.yml`
+- [X] T015 [P] [US2] Add stable-promotion and no-mutation-on-failure workflow assertions in `tests/workflow/promotion-contract.md`
+- [X] T016 [US2] Add post-verification `stable` promotion and digest comparison in `.github/workflows/nightly-build.yml`
+- [X] T017 [US2] Add failure-path guards that prevent release and `stable` publication after any failed verification in `.github/workflows/nightly-build.yml`
 
 **Checkpoint**: `stable` can only identify a candidate that passed the same behavioral checks as its release-version tag.
 
@@ -71,9 +71,9 @@
 
 **Independent Test**: A user can inspect a published image and repository documentation to find its upstream tag, source revision, build date, license, and build workflow evidence.
 
-- [ ] T018 [P] [US3] Add OCI source, revision, created-date, license, and version labels to `Dockerfile`
-- [ ] T019 [P] [US3] Document image tag contract, source retrieval, and AGPLv3 corresponding-source path in `README.md`
-- [ ] T020 [US3] Add workflow build summary containing release tag, source revision, digest, and verification result in `.github/workflows/nightly-build.yml`
+- [X] T018 [P] [US3] Add OCI source, revision, created-date, license, and version labels to `Dockerfile`
+- [X] T019 [P] [US3] Document image tag contract, source retrieval, and AGPLv3 corresponding-source path in `README.md`
+- [X] T020 [US3] Add workflow build summary containing release tag, source revision, digest, and verification result in `.github/workflows/nightly-build.yml`
 
 **Checkpoint**: Every public candidate has discoverable provenance and licensing evidence.
 
@@ -83,10 +83,10 @@
 
 **Purpose**: Verify the end-to-end contract and prevent accidental cluster deployment.
 
-- [ ] T021 [P] Confirm README commands and expected outcomes against `specs/001-nightly-minio-build/quickstart.md`
-- [ ] T022 [P] Add repository guidance excluding cluster credentials and production deployment logic in `README.md`
-- [ ] T023 Run a manual no-update workflow and a controlled new-release workflow; record outcomes in `specs/001-nightly-minio-build/quickstart.md`
-- [ ] T024 Verify the published package is public, uses exact upstream release-version tags, and has no overwritten release tag in `README.md`
+- [X] T021 [P] Confirm README commands and expected outcomes against `specs/001-nightly-minio-build/quickstart.md`
+- [X] T022 [P] Add repository guidance excluding cluster credentials and production deployment logic in `README.md`
+- [X] T023 Run a manual no-update workflow and a controlled new-release workflow; record outcomes in `specs/001-nightly-minio-build/quickstart.md`
+- [X] T024 Verify the published package is public, uses exact upstream release-version tags, and has no overwritten release tag in `README.md`
 
 ## Dependencies & Execution Order
 
