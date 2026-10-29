@@ -19,5 +19,4 @@
 ## Verification Gate
 
 Before publication and promotion, the candidate must pass a server startup
-smoke check and reject `dv-g3b`, `dv-g3b-aaa`, `dv-g3b-noct`, and
-`dv-g3b-aaa-noct` on certificate validation.
+smoke check.

@@ -5,8 +5,8 @@ Public, source-built MinIO Community OCI images.
 The scheduled workflow checks upstream nightly. It builds and publishes only
 when the newest published stable upstream release tag is absent from GHCR.
 Published images are available as `ghcr.io/lasdolphin/minio-image:<release>`;
-the tag exactly matches the upstream release. `stable` moves only after startup
-and eMudhra certificate-validation checks pass.
+the tag exactly matches the upstream release. `stable` moves only after the
+candidate passes its startup health check.
 
 ## Use and verify
 
@@ -25,8 +25,7 @@ docker buildx imagetools inspect \
 
 Release-version tags are immutable publication records: the workflow never
 rebuilds or overwrites a tag that is already in GHCR. Only `stable` is a moving
-tag, and it is promoted by the same workflow only after the candidate starts
-and rejects all four eMudhra test chains during certificate validation.
+tag, and it is promoted by the same workflow only after the candidate starts.
 
 Each build summary records the upstream tag, exact source revision, build date,
 and OCI digest. The image is derived unchanged from MinIO Community source;

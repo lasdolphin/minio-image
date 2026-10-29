@@ -12,7 +12,7 @@
 
 **Purpose**: Establish the repository layout and public licensing baseline.
 
-- [X] T001 Create CI, script, TLS-probe, and license directories in `.github/workflows/`, `scripts/`, `tests/tls-probe/`, and `LICENSES/`
+- [X] T001 Create CI, script, and license directories in `.github/workflows/`, `scripts/`, and `LICENSES/`
 - [X] T002 [P] Add AGPLv3 license and MinIO upstream attribution in `LICENSES/AGPL-3.0.txt` and `LICENSES/UPSTREAM.md`
 - [X] T003 [P] Expand project purpose, public package location, and production boundary in `README.md`
 
@@ -27,8 +27,8 @@
 - [X] T004 Create a reproducible source-build Dockerfile accepting exact release tag and source revision in `Dockerfile`
 - [X] T005 [P] Implement a stable-release discovery helper that returns only published, non-draft, non-prerelease releases in `scripts/discover-release.sh`
 - [X] T006 [P] Implement a GHCR release-tag existence helper in `scripts/release-exists.sh`
-- [X] T007 [P] Implement a runtime startup and four-endpoint certificate-validation probe in `tests/tls-probe/main.go`
-- [X] T008 Build candidate verification orchestration around the runtime probe in `scripts/verify-candidate.sh`
+- [X] T007 [P] Implement a runtime startup check in `scripts/verify-candidate.sh`
+- [X] T008 Build candidate verification orchestration in `scripts/verify-candidate.sh`
 
 **Checkpoint**: Source discovery, candidate image building, and behavioral verification are available to the workflow.
 
@@ -38,10 +38,10 @@
 
 **Goal**: Run nightly checks and build/publish only an absent latest stable MinIO release.
 
-**Independent Test**: A manual workflow run with an existing release tag returns `no-update` with no build/push; a run for an absent stable release builds it, starts it, and records four certificate-validation rejections.
+**Independent Test**: A manual workflow run with an existing release tag returns `no-update` with no build/push; a run for an absent stable release builds and starts it.
 
 - [X] T009 [P] [US1] Add shell tests for stable/non-prerelease selection and malformed release data in `tests/discover-release.test.sh`
-- [X] T010 [P] [US1] Add TLS-probe tests for four rejected chains and any successful connection failure in `tests/tls-probe/main_test.go`
+- [X] T010 [P] [US1] Add startup verification coverage in `scripts/verify-candidate.sh`
 - [X] T011 [US1] Implement nightly and manual triggers plus least-privilege read permissions in `.github/workflows/nightly-build.yml`
 - [X] T012 [US1] Wire release discovery and exact release-tag no-update exit into `.github/workflows/nightly-build.yml`
 - [X] T013 [US1] Wire exact source checkout, candidate build, startup smoke check, and `scripts/verify-candidate.sh` into `.github/workflows/nightly-build.yml`

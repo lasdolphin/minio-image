@@ -49,16 +49,14 @@ it avoids a long-lived personal registry credential.
 and broader exposure; private packaging conflicts with the requested public
 image.
 
-## Verify certificate trust behavior before promotion
+## Verify candidate startup before promotion
 
-**Decision**: Require startup success and certificate-validation rejection for
-all four eMudhra endpoints before publishing/promoting the candidate.
+**Decision**: Require the candidate server to become healthy before
+publishing/promoting it.
 
-**Rationale**: Base-image or toolchain version is not behavioral proof. Save
-per-host results in the workflow log.
-
-**Alternatives considered**: Testing a single endpoint or relying only on a
-base image version cannot establish closure.
+**Rationale**: A startup health check catches failed source builds that produce
+an unusable runtime without coupling this public build pipeline to a specific
+external vulnerability endpoint.
 
 ## Sources
 

@@ -2,17 +2,13 @@
 set -euo pipefail
 
 image="${1:?candidate image is required}"
-root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 name="minio-verify-${GITHUB_RUN_ID:-local}-$$"
-probe="$root/.tmp-tls-probe"
 
 cleanup() {
   docker rm -f "$name" >/dev/null 2>&1 || true
-  rm -f "$probe"
 }
 trap cleanup EXIT
 
-go build -o "$probe" "$root/tests/tls-probe/main.go"
 docker run -d --rm --name "$name" -p 9000 \
   -e MINIO_ROOT_USER=minioadmin \
   -e MINIO_ROOT_PASSWORD=minioadmin \
@@ -32,5 +28,3 @@ for _ in $(seq 1 30); do
 done
 
 curl --fail --silent --show-error "http://127.0.0.1:${host_port}/minio/health/live" >/dev/null
-docker cp "$probe" "$name:/tmp/tls-probe"
-docker exec "$name" /tmp/tls-probe

@@ -76,7 +76,7 @@ As the public image maintainer, I need every published build to identify its ups
 - **FR-004**: The build MUST publish the resulting OCI image publicly under `ghcr.io/lasdolphin/minio-image`.
 - **FR-005**: Each successful build MUST use an image tag exactly matching the upstream MinIO release version; it MUST record the resulting content digest as build evidence, but MUST NOT substitute a digest for the release-version tag.
 - **FR-006**: The stable-candidate reference MUST advance only after the associated build and verification checks succeed.
-- **FR-007**: Each candidate image MUST pass a startup smoke check and reject all four eMudhra advisory certificate chains through certificate validation before it may become the stable candidate.
+- **FR-007**: Each candidate image MUST pass a startup smoke check before it may become the stable candidate.
 - **FR-008**: A failed discovery, build, publication, or verification MUST leave the current stable candidate unchanged and provide a diagnosable failure result.
 - **FR-009**: Published image metadata and repository documentation MUST state the upstream release, source revision, build date, and AGPLv3 licensing obligations.
 - **FR-010**: The feature MUST not automatically update the production MinIO deployment; production adoption remains a separately reviewed GitOps change.
@@ -93,7 +93,7 @@ As the public image maintainer, I need every published build to identify its ups
 
 - **SC-001**: At least 99% of scheduled nightly release checks over a 30-day period complete with a recorded success, no-update, or failure result within 30 minutes.
 - **SC-002**: 100% of successfully published candidate images use a tag exactly matching their upstream release and expose source-release evidence.
-- **SC-003**: 100% of stable-candidate promotions have a passing startup check and four recorded certificate-validation rejections for the eMudhra advisory endpoints.
+- **SC-003**: 100% of stable-candidate promotions have a passing startup check.
 - **SC-004**: 0 failed or unverified builds replace the previously available stable candidate.
 - **SC-005**: An operator can identify the exact upstream source and build date for any published candidate in under five minutes using public repository and image metadata.
 

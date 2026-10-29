@@ -7,7 +7,7 @@
 Run a GitHub Actions workflow nightly and on demand. It checks the latest
 published non-prerelease MinIO release. If its exact release tag already exists
 in GHCR, it exits successfully as `no-update`. Otherwise it builds that exact
-source revision, verifies startup and eMudhra TLS rejection, then publishes the
+source revision, verifies startup, then publishes the
 release-version tag and promotes `stable`.
 
 ## Technical Context
@@ -18,7 +18,7 @@ release-version tag and promotes `stable`.
 
 **Storage**: Git files and GHCR package metadata; no application database
 
-**Testing**: Workflow-dispatch integration run; source build; container startup; four-endpoint certificate-validation probe
+**Testing**: Workflow-dispatch integration run; source build; container startup
 
 **Target Platform**: GitHub-hosted Linux runner; `linux/amd64` OCI image initially
 
@@ -60,7 +60,6 @@ specs/001-nightly-minio-build/
 .github/workflows/nightly-build.yml
 scripts/discover-release.sh
 scripts/verify-candidate.sh
-tests/tls-probe/
 Dockerfile
 LICENSES/
 README.md

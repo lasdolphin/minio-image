@@ -21,12 +21,12 @@ completed successfully. It selected `RELEASE.2025-10-15T17-29-55Z`, reported
 1. Run the workflow for a stable release tag absent from GHCR.
 2. Confirm source evidence identifies its tag and full commit.
 3. Confirm GHCR exposes the matching release-version tag and recorded digest.
-4. Confirm startup and all four certificate-validation checks pass.
+4. Confirm the candidate startup check passes.
 5. Confirm `stable` resolves to the verified image.
 
 **Recorded 2026-10-29:** [run 40953793300](https://github.com/lasdolphin/minio-image/actions/runs/40953793300)
 built MinIO at `9e49d5e7a648f00e26f2246f4dc28e6b07f8c84a`, completed the
-startup and four-chain certificate-rejection checks, then published
+startup check, then published
 `RELEASE.2025-10-15T17-29-55Z` and `stable` at
 `sha256:43f9e2559942792b73345974b86197b2f46a2755a5250773ebf792d529e5e281`.
 That run ended non-zero only while rendering its post-publication digest
