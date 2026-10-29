@@ -1,0 +1,5 @@
+SPDX-License-Identifier: AGPL-3.0-or-later
+
+MinIO Community source is licensed under GNU Affero General Public License v3.0
+or later. The authoritative upstream license is retained with every source
+checkout and is available at https://www.gnu.org/licenses/agpl-3.0.html.

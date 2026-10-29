@@ -1,0 +1,12 @@
+.DS_Store
+.agents/
+*.log
+*.tmp
+*.swp
+.env
+.env.*
+*.exe
+*.test
+*.out
+vendor/
+coverage/

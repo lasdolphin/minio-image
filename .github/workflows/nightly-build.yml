@@ -1,0 +1,91 @@
+name: Nightly MinIO Image
+
+on:
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: minio-image-publish
+  cancel-in-progress: false
+
+env:
+  IMAGE: ghcr.io/lasdolphin/minio-image
+
+jobs:
+  release-check:
+    runs-on: ubuntu-latest
+    outputs:
+      release_tag: ${{ steps.release.outputs.release_tag }}
+      source_revision: ${{ steps.release.outputs.source_revision }}
+      exists: ${{ steps.exists.outputs.exists }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Discover latest stable release
+        id: release
+        run: scripts/discover-release.sh >> "$GITHUB_OUTPUT"
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Check whether the release image already exists
+        id: exists
+        run: scripts/release-exists.sh "$IMAGE" "${{ steps.release.outputs.release_tag }}" >> "$GITHUB_OUTPUT"
+      - name: Report no update
+        if: steps.exists.outputs.exists == 'true'
+        run: echo "No build required for ${{ steps.release.outputs.release_tag }}" >> "$GITHUB_STEP_SUMMARY"
+
+  build-verify-publish:
+    needs: release-check
+    if: needs.release-check.outputs.exists != 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.24.x"
+      - name: Test release discovery and TLS probe
+        run: |
+          bash tests/discover-release.test.sh
+          go test ./tests/tls-probe
+      - uses: docker/setup-buildx-action@v3
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build candidate from the selected source revision
+        run: |
+          docker build \
+            --build-arg MINIO_RELEASE="${{ needs.release-check.outputs.release_tag }}" \
+            --build-arg MINIO_COMMIT="${{ needs.release-check.outputs.source_revision }}" \
+            --build-arg BUILD_DATE="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            --tag minio-candidate:verify .
+      - name: Verify startup and eMudhra certificate rejection
+        run: scripts/verify-candidate.sh minio-candidate:verify
+      - name: Publish verified release and stable tags
+        id: publish
+        run: |
+          release="${{ needs.release-check.outputs.release_tag }}"
+          docker tag minio-candidate:verify "$IMAGE:$release"
+          docker tag minio-candidate:verify "$IMAGE:stable"
+          docker push "$IMAGE:$release"
+          docker push "$IMAGE:stable"
+          digest="$(docker buildx imagetools inspect "$IMAGE:$release" --format '{{.Digest}}')"
+          printf 'digest=%s\n' "$digest" >> "$GITHUB_OUTPUT"
+      - name: Publish provenance summary
+        run: |
+          {
+            echo "## Published MinIO Community image"
+            echo "- Release: \`${{ needs.release-check.outputs.release_tag }}\`"
+            echo "- Source revision: \`${{ needs.release-check.outputs.source_revision }}\`"
+            echo "- Digest: \`${{ steps.publish.outputs.digest }}\`"
+            echo "- eMudhra verification: all four endpoints rejected on certificate validation"
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,9 @@
+.git/
+.agents/
+.specify/
+specs/
+tests/
+scripts/
+.github/
+*.log
+.env*
