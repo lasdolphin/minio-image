@@ -1,0 +1,31 @@
+name: Verify MinIO build
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  packages: write
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Discover upstream release
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: scripts/discover-release.sh >> "$GITHUB_OUTPUT"
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and verify candidate
+        env:
+          RELEASE: ${{ steps.release.outputs.release_tag }}
+          REVISION: ${{ steps.release.outputs.source_revision }}
+        run: |
+          docker build --build-arg MINIO_RELEASE="$RELEASE" --build-arg MINIO_COMMIT="$REVISION" --build-arg BUILD_DATE="$(date -u +%Y-%m-%dT%H:%M:%SZ)" -t minio-candidate:verify .
+          scripts/verify-candidate.sh minio-candidate:verify
+          docker run --rm minio-candidate:verify --version | grep -F "$RELEASE"
+          docker tag minio-candidate:verify "ghcr.io/lasdolphin/minio-image:verify-${GITHUB_RUN_ID}"
+          docker push "ghcr.io/lasdolphin/minio-image:verify-${GITHUB_RUN_ID}"

@@ -9,7 +9,11 @@ WORKDIR /src
 RUN git clone --filter=blob:none https://github.com/minio/minio.git . \
  && git checkout --detach "$MINIO_RELEASE" \
  && test "$(git rev-parse HEAD)" = "$MINIO_COMMIT"
-RUN CGO_ENABLED=0 go build -trimpath -o /out/minio ./
+RUN version="$(printf '%s' "$MINIO_RELEASE" | sed -E 's/^RELEASE\.([0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2})-([0-9]{2})-([0-9]{2}Z)$/\1:\2:\3/')" \
+ && test "$version" != "$MINIO_RELEASE" \
+ && ldflags="$(MINIO_RELEASE=RELEASE go run buildscripts/gen-ldflags.go "$version")" \
+ && CGO_ENABLED=0 go build -tags kqueue -trimpath -ldflags "$ldflags" -o /out/minio ./ \
+ && /out/minio --version | grep -F "$MINIO_RELEASE"
 
 FROM debian:trixie-slim
 ARG MINIO_RELEASE
